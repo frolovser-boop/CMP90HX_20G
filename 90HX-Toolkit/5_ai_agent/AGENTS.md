@@ -58,7 +58,7 @@ ssh agent@<host> 'sudo /opt/mycmp90/agent-status.sh --save'   # быстрый �
 Интерпретация сбоев: `UNLOCK: FAIL` + пустые dmesg-маркеры → анлок не
 выполнился в этой загрузке (модуль не тот/не загрузился) → проверить
 `/lib/modules/$(uname -r)/updates/cmpunlocker*` и перезагрузку; **PCIe max
-link 2.5GT/s — это нормально** (Gen2 недоказан на 90HX, см. STATUS.md);
+link 2.5GT/s — это нормально** (Gen2 достигается программно, см. STATUS.md и пункт «PCIe GEN2» в PWNER);
 `INCONCLUSIVE` в check.sh — не считается провалом (таймаут RM-запроса).
 
 ## 5. Сценарии-прогоны
