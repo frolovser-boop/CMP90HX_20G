@@ -92,3 +92,31 @@ Supermicro X11SPi-TF / ASRock Rack EPXCL1925 + Xeon Gold 6132/6142 (LGA3647):
 
 Смежные расходы будущего: чипы для 20GB-модов (см. 20GB_PROCEDURE §1) —
 только если решите растить VRAM.
+
+---
+
+## 8. Снапшот конкретных находок на Avito (снято 2026-11-08; объявления ротируются — используйте как ориентир цен, не как прайс)
+
+**Плата X99 + E5-2680v4** ([поиск](https://www.avito.ru/all/tovary_dlya_kompyutera/komplektuyuschie/materinskie_platy-ASgBAgICAkTGB~pm7gnOZw?q=2680v4)):
+X99XD4+E5-2680v4 без RAM — 4 200–4 400 ₽ (Курск/Н.Тагил) · Huananzhi X99-TF — плата 3 600 ₽ / CPU 1 000 ₽ · X99 F8+2680v4+32 ГБ — 13 900 ₽ · 2×CPU ZX-DU99D4+32 ГБ — 34 900 ₽ · X99-CH8+кулер (Москва).
+⚠️ Смотреть фото слотов: нужно ≥2 полноразмерных x16.
+
+**RAM 64 ГБ (4×16 RECC)** ([поиск](https://www.avito.ru/all/tovary_dlya_kompyutera/komplektuyuschie/operativnaya_pamyat-ASgBAgICAkTGB~pm7gnYZw?q=ddr4+ecc+reg+2400)):
+Samsung 16GB 2400 ECC REG — 3 500 ₽/шт (4 шт = 14 000) · Hynix HMA42GR7AFR4N-UH — от 3 500 ₽ · HP 16Gb 2400 — от 500 ₽/шт (партии по 750 ₽+). Итог: 6–14 т.₽.
+
+**Дисплей-карта** ([GT 1030](https://www.avito.ru/all/tovary_dlya_kompyutera/komplektuyuschie-ASgBAgICAUTGB~pm?q=geforce+gt+1030)):
+MSI GT 710 1GB (Москва) — 1 500 ₽ · GT 710 (Томск) — 1 500 ₽ · GT 1030 2GB — 2 000–2 500 ₽ · Asus GT 1030 пассив — 3 650 ₽.
+
+**БП 1000–1200 Вт gold** ([Corsair 1000](https://www.avito.ru/all/tovary_dlya_kompyutera/komplektuyuschie/bloki_pitaniya-ASgBAgICAkTGB~pm7gmcZw?q=corsair+1000) / [Seasonic](https://www.avito.ru/all/tovary_dlya_kompyutera/komplektuyuschie/protsessory-ASgBAgICAkTGB~pm7gniZw?q=seasonic+1000)):
+Corsair RM1000x б/у проверен — 8 000 ₽ · HX1000 Gold — 7 000 ₽ · Seasonic GX-1000 — 6 990 ₽ · CM V1200 Platinum — 6 600 ₽ · Zalman 1200W — 6 000 ₽. Нужно 4 отдельных 8-pin.
+
+**NVMe 1 ТБ** ([поиск](https://www.avito.ru/all/tovary_dlya_kompyutera/komplektuyuschie/zhestkie_diski-ASgBAgICAkTGB~pm7gmwZw?q=ssd+m2+1tb)):
+б/у от 1 900–3 100 ₽ · Samsung 9100 Pro / Crucial P3 Plus — от 4 990 ₽. Проверять SMART.
+
+**Корпус 4U/стенд**:
+Cryptone-6 19" 4U на 6 GPU (Москва, конкретное объявление) · б/у Cryptone (Екатеринбург) — от 800 ₽ · открытые стенды 6–7 GPU — от 2 500 ₽ · новые 4U 6/8 GPU — от ~5 300 ₽.
+
+**Вторая CMP 90HX** ([поиск «cmp 90hx»](https://www.avito.ru/all/tovary_dlya_kompyutera/komplektuyuschie/videokarty-ASgBAgICAkTGB~pm7gmmZw?q=cmp+90hx)):
+Manli 10GB (СПб) — 20 500 ₽ · Manli (Белгород, 20 шт в наличии) — 22 000 ₽ · GA102-100 (Арзамас) — 20 000 ₽ · б/у (Кызыл) — 9 000 ₽ (⚠️ возможны повреждения) · партия (Кемерово) — 25 000 ₽/шт. Типичный диапазон 19–22 т.₽; торговаться.
+
+**Итого машина (хост + 2-я карта): ~30–40 т.₽.**
