@@ -1,0 +1,13 @@
+# Ensure shell scripts keep LF on any platform (they run on Linux servers)
+*.sh text eol=lf
+# Text docs
+*.md text
+*.txt text
+*.cfg text
+# Binaries
+*.png binary
+*.jpg binary
+*.exe binary
+*.zip binary
+*.iso binary
+*.img binary

@@ -1,0 +1,79 @@
+# STATUS — трекер верификации утверждений MyCMP90
+
+> Этот файл — единственное место, где фиксируется, что из документации **реально проверено**,
+> а что остаётся теорией. Обновляется при каждой новой верификации на реальном железе.
+>
+> Первоисточник: `../cmp90hx-unlock/cmp90hx-unlock/STATUS.md` (верификация 2026-08-16,
+> ядро 6.12.95, драйвер Open 610.43.03, профиль `cmp90-rejoin15`).
+
+Легенда: ✅ проверено на железе · ⚠️ реализовано в коде, требует проверки на конкретной карте · ❌ опровергнуто / противоречие · ⬜ только теория
+
+---
+
+## 1. Compute Unlock (SM Issue-Rate)
+
+| Утверждение | Статус | Доказательство |
+| :--- | :--- | :--- |
+| Эксплойт V67 снимает троттлинг 9 полей Issue-Rate | ✅ | `check.sh: PASS DP=full FFMA=full FMLA16=full FMLA32=full IMLA0..4=full (9/9)` |
+| PLM переключается `0xffffff8f` → `0xffffffff` | ✅ | `dmesg: CMP90_PROD_STACK_SHIFT_PLM_V67: FEAT_PLM_before/after` |
+| Селекторы SS0/SS1 записываются как `0x88888888` / `0x00000008` | ✅ | `dmesg: CMP90_STOCKFLOW_REJOIN12: ss0_after, ss1_after` |
+| Анлок персистентен между перезагрузками (rejoin15, без systemd) | ✅ | Установлен однажды — работает при каждой загрузке (`rejoin14: nv_start_device retry rc=0`) |
+| Prefill pp512 ускоряется ~7.9× | ✅ | gemma-4-12B-it-QAT-Q4_0: **224.10 → 1770.67 t/s** |
+| Decode tg16 ~55 t/s (потолок ПСП) | ✅ | 55.48 t/s после анлока |
+| FP16 Tensor ~115 TFLOPS, FP32 ~29.8 TFLOPS | ✅ | GEMM-бенчмарки после анлока |
+
+## 2. PCIe
+
+| Утверждение | Статус | Доказательство |
+| :--- | :--- | :--- |
+| Стоковая карта жёстко ограничена Gen1 x16 (~3.5 ГБ/с) | ✅ | `LnkCap2: 2.5GT/s only`, `LnkSta 2.5GT/s` |
+| **Retrain до Gen2 x16 работает** | ⚠️ **конфликт бенчей разгадан, требуется проверка на вашем экземпляре** | `pwner` сообщает SUCCESS с **тройной** верификацией (sysfs + LnkSta EP + LnkSta upstream — не артефакт). Различие методов: pwner открывает маску **XVE `0x00088FE8`** V67-цепочкой, а кампания GEN3ADV в cmp90hx-unlock целилась в **XP3G `0x8E1B0`** (другой домен) — её вывод «fuse-derived» корректен только для XP3G. Проверка: прочитать `0x88FE8` на своём экземпляре → прогнать `pwner → PCIe GEN2`. Подробно: [docs/PCIE_SOLDERING_ANALYSIS.md](docs/PCIE_SOLDERING_ANALYSIS.md) §4–5 |
+| PCIe Gen1 не является бутылочным горлышком для decode | ✅ | Веса уже в VRAM, обмен = килобайты на токен |
+| PCIe Gen1 замедляет загрузку модели (10 ГБ ≈ 3–4 с vs ~1 с на Gen3) | ✅ | Ожидаемо, незначимо для работы |
+| PCIe Gen1 — bottleneck для Tensor Parallelism (AllReduce на каждом токене) | ✅ | Ожидаемо; частично компенсируется P2P |
+
+## 3. P2P
+
+| Утверждение | Статус | Доказательство |
+| :--- | :--- | :--- |
+| P2P включается параметрами `nvidia.ko` (ForceP2P, PeerMappingOverride и др.) | ⚠️ | Механизм реализован в `cmp90hx_pwner` (`load_patched_driver_once_with_p2p`); на своём железе проверять по матрице `nvidia-smi topo -p2p r/w` → `OK` |
+| Реальная скорость P2P ~6.7 ГБ/с | ⚠️ | Заявлено в `PCIE_AND_P2P.md` по бенчмарку p2pBandwidthLatencyTest; требует воспроизведения |
+| Для стабильного P2P нужны IOMMU-настройки GRUB | ⚠️ | `intel_iommu=on iommu=pt pci=realloc,hpmemsize=8G,hpmmiosize=256M` |
+
+## 4. Мод 20 ГБ
+
+| Утверждение | Статус | Доказательство |
+| :--- | :--- | :--- |
+| 6-й контроллер FBP отключён eFuse (320-бит, потолок 20 ГБ, не 24) | ✅ | `FUSE_FBP_DISABLE=0x08`, `FBPA_NUM_ACTIVE=5` |
+| Перепайка 10×8Gb → 10×16Gb GDDR6X даёт 20 ГБ | ⬜ на 90HX / ✅ на CMP 50HX (TU102, проект xrip) | |
+| Нужны страпы RAMCFG под 16Gb | ⬜ | Таблица страпов из схемы PG132, целевые позиции не подтверждены для 90HX |
+| Нужен VBIOS с BCT от 16Gb-конфигурации (RTX 3080 20GB engineering) | ⬜ | Кросс-прошивка RTX 3080 Manli на 90HX дала `GFW_BOOT 0x55 = memory training failed` — без BCT не стартует |
+| Нужен динамический расчёт WPR2 (иначе ошибка `0x8d`) | ⚠️ | Патч `01-cmp50-stockflow.patch` в cmp50hx-unlock; на 20 ГБ WPR уезжает `027fee00 → 04ffee00` |
+| Отбраковка памяти после пайки через MATS/nvmt | ✅ для 90HX (MODS 455 + nvmt 2022) / ✅ для 50HX | `../455.219/`: MODS ветки 455 с **`gldGA102.bin`**; Rufus-образ `../MODS - NVMT - Rufus/` — то же + **nvmt 2022 «3000-4090» (GA102 = YES)**. Целостность образа подтверждена: MD5 совпадает с релизом первоисточника ([levirepair.eu, thread 3](https://levirepair.eu/infusions/forum/viewthread.php?thread_id=3)). `MATS_MODS_NVMT` (MODS 400 + nvmt 2.0) GA102 не поддерживает — только трек CMP 50HX/TU102. Разбор: [docs/DIAG_TOOLS_MATS_NVMT.md](docs/DIAG_TOOLS_MATS_NVMT.md) |
+| Выбор чипов для 20GB-мода (16 Гбит GDDR6X) | ✅ маркировки сверены двумя источниками | Основной: **D8BZC = MT61K512M32KPA-21 (21 Gbps, 3090 Ti/4090)**, запасной D8BZF. **D8BGW = 8 Гбит (сток 3080/90HX)** — ранняя таблица в MEMORY_MOD_20GB.md ошибочно называла его 16-гигабитным KPA-19; исправлено по чарту NWR ([thread 5](https://levirepair.eu/infusions/forum/viewthread.php?thread_id=5), [img/levirepair/nwr_mem_chart_1.jpg](docs/img/levirepair/nwr_mem_chart_1.jpg)) |
+
+## 5. Windows / UEFI
+
+| Утверждение | Статус | Доказательство |
+| :--- | :--- | :--- |
+| UEFI-анлок работает на GA10x GeForce (RTX 30xx) | ✅ | nv-uefi-unlocker v2.1.10, матрица совместимости + подтверждения сообщества |
+| UEFI-анлок работает на CMP | ✅ на 50HX (efi-unlock cmp50hx-unlock) / ⬜ на 90HX | Для 90HX нужно: DeviceID `10de:220d` в allowlist + проверка GA102-цепочки V67 pre-OS |
+| Windows-инсталлятор с UEFI-анлоком (без патчей ядра) | ✅ на 50HX (`efi-unlock-windows`) / ⬜ на 90HX | |
+| Требуется `EnableGpuFirmware=1` в Windows-драйвере | ⚠️ | Заявлено в cmp50hx-unlock README как необходимое условие сохранения состояния EFI в ОС |
+| UEFI-анлок может теряться после полного отключения питания (нужен logon-таск повторного применения) | ⚠️ | Наблюдалось на RTX 3070; у 50HX применяется BYOVD logon task |
+
+## 6. Инференс
+
+| Утверждение | Статус | Доказательство |
+| :--- | :--- | :--- |
+| 7B–8B Q4/Q8 помещаются в 10 ГБ с контекстом 16k–32k | ✅ | Проверено (gemma-4-12B Q4_0 в 10 ГБ на стенде cmp90hx-unlock) |
+| vLLM TP=2 на 2 картах запускает 32B Q4 | ⬜ | Теория из INFERENCE_GUIDE.md; проверить `stack/run-vllm-tp2.sh` |
+| Power limit 200 Вт сохраняет ~96% производительности | ⚠️ | Заявление INFERENCE_GUIDE.md; проверить `stack/power.sh` + bench до/после |
+
+---
+
+## Как обновлять этот файл
+
+1. Провели операцию на железе → запускаем `stack/check.sh`, `stack/bench.sh`.
+2. Результат (даже негативный) вписываем в соответствующую таблицу с датой и логом.
+3. Утверждение, подтверждённое на вашей карте, переводим из ⚠️/⬜ в ✅ с указанием даты.
