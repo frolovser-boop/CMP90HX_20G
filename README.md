@@ -102,6 +102,8 @@
 
 ## 🗺️ Roadmap внедрения
 
+> 🖥️ Подбираете железо для машины? → [`docs/HOST_HARDWARE.md`](docs/HOST_HARDWARE.md)
+
 1. ✅ **E — Документация приведена к честным статусам** (этот README, STATUS.md, правки PCIE_AND_P2P.md).
 2. ✅ **A — Рабочий Linux-стек**: `stack/install-unlock.sh` + `stack/check.sh` + `stack/bench.sh` + `stack/power.sh`.
 3. ✅ **C — Мультикарточная конфигурация**: `stack/p2p-setup.sh` + `stack/run-vllm-tp2.sh` (Qwen 32B на 2×10 ГБ).
