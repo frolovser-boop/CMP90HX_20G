@@ -98,8 +98,22 @@ Supermicro X11SPi-TF / ASRock Rack EPXCL1925 + Xeon Gold 6132/6142 (LGA3647):
 ## 8. Снапшот конкретных находок на Avito (снято 2026-11-08; объявления ротируются — используйте как ориентир цен, не как прайс)
 
 **Плата X99 + E5-2680v4** ([поиск](https://www.avito.ru/all/tovary_dlya_kompyutera/komplektuyuschie/materinskie_platy-ASgBAgICAkTGB~pm7gnOZw?q=2680v4)):
-X99XD4+E5-2680v4 без RAM — 4 200–4 400 ₽ (Курск/Н.Тагил) · Huananzhi X99-TF — плата 3 600 ₽ / CPU 1 000 ₽ · X99 F8+2680v4+32 ГБ — 13 900 ₽ · 2×CPU ZX-DU99D4+32 ГБ — 34 900 ₽ · X99-CH8+кулер (Москва).
-⚠️ Смотреть фото слотов: нужно ≥2 полноразмерных x16.
+Huananzhi X99-TF — плата 3 600 ₽ / CPU 1 000 ₽ · X99 F8+2680v4+32 ГБ — 13 900 ₽ · 2×CPU ZX-DU99D4+32 ГБ — 34 900 ₽ · X99-CH8+кулер (Москва) · MSI X99A Raider — 14 500 ₽ / MSI X99S SLI Plus — 12 500 ₽ / ASUS X99-A II (брендовые).
+⚠️ **X99XD4 (4 200–4 400 ₽) — ЗАБРАКОВАТЬ для проекта: там 1 × PCIe x16** (плюс x1) — вторую карту ставить некуда.
+
+### Раскладка слотов подходящих X99 (по мануалам, 2026-11)
+
+| Плата | Слоты | 2 карты |
+|---|---|---|
+| X99XD4 | 1× x16 + x1 | ❌ не подходит |
+| **Huananzhi X99-TF** | 2× x16 + 1× x4 (физ. x16) + 2× x1, 2× M.2 | ✅ |
+| **Huananzhi X99-F8** | 2× x16 + 1× x4 + 2× x1 | ✅ (часть карт заводится в 3-м слоте — особенность BIOS) |
+| **Huananzhi X99-T8 / T8D** | 2× / 3× x16, 2× M.2 | ✅ |
+| **F8D Plus / 2×CPU ZX-DU99D4** | bifurcation x16→x8+x8, 80 линий | ✅✅ запас на 3–4 карты |
+| **MSI X99A Raider / X99S SLI Plus / ASUS X99-A II** | ATX, x16+x16/x8, CSM и Above 4G из коробки, вменяемый BIOS | ✅ лучший вариант при цене 12–15 т.₽ |
+
+⚠️ Электрика второго слота на китайских платах бывает x8/x4 в зависимости от CPU
+и ревизии — после сборки проверить фактическую ширину линков (`agent-status.sh`).
 
 **RAM 64 ГБ (4×16 RECC)** ([поиск](https://www.avito.ru/all/tovary_dlya_kompyutera/komplektuyuschie/operativnaya_pamyat-ASgBAgICAkTGB~pm7gnYZw?q=ddr4+ecc+reg+2400)):
 Samsung 16GB 2400 ECC REG — 3 500 ₽/шт (4 шт = 14 000) · Hynix HMA42GR7AFR4N-UH — от 3 500 ₽ · HP 16Gb 2400 — от 500 ₽/шт (партии по 750 ₽+). Итог: 6–14 т.₽.
